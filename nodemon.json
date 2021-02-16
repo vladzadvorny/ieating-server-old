@@ -1,0 +1,15 @@
+{
+  "ignore": ["node_modules"],
+  "env": {
+    "NODE_ENV": "development",
+    "PORT": 3001,
+    "DB_NAME": "mayo",
+    "DB_USER": "hello",
+    "DB_PASSWORD": "world",
+    "DB_HOST": "localhost",
+    "DB_PORT": 3306
+  },
+  "watch": "./",
+  "ext": ".js,.json",
+  "exec": "babel-node src/app.js"
+}
