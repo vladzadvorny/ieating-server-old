@@ -1,2 +1,4 @@
-export const sequelize = require('./sequelize').default
-export const User = require('./user').default
+import sequelize from './sequelize'
+import User from './user'
+
+export { sequelize, User }

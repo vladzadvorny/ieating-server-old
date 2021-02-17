@@ -28,6 +28,14 @@ User.init(
     providers: {
       type: DataTypes.JSON
     },
+    ip: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    pushToken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
 
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
     updatedAt: { type: DataTypes.DATE, field: 'updated_at' }
