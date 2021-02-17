@@ -1,5 +1,6 @@
 import express from 'express'
 import jwt from 'jsonwebtoken'
+import _ from 'lodash'
 
 import { User } from '../models'
 import { permissions } from '../utils/permissions'
@@ -78,6 +79,30 @@ router.get('/', permissions('user'), async (req, res) => {
     if (!me) {
       throw new Error('User not exist')
     }
+
+    return res.json({ me: filterPublicAttributes(me, User) })
+  } catch (error) {
+    return res.status(401).json({ error: error.message })
+  }
+})
+
+// update me
+router.post('/', permissions('user'), async (req, res) => {
+  const ip =
+    req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.ip || ''
+  const { pushToken } = _.pick(req.body, ['pushToken'])
+
+  try {
+    const me = await User.findByPk(req.user.id)
+    console.log('hello')
+    if (!me) {
+      throw new Error('User not exist')
+    }
+
+    me.pushToken = pushToken
+    me.ip = ip
+
+    await me.save()
 
     return res.json({ me: filterPublicAttributes(me, User) })
   } catch (error) {
