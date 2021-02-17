@@ -19,3 +19,5 @@ other
 ```
 yarn add -D nodemon
 ```
+
+aws poloskun1994@bk.ru

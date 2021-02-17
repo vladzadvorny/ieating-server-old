@@ -6,8 +6,8 @@ scp -i "~/.ssh/eating.pem" package.tar.gz ubuntu@ec2-18-188-190-7.us-east-2.comp
 rm package.tar.gz
 
 ssh -i "~/.ssh/eating.pem" ubuntu@ec2-18-188-190-7.us-east-2.compute.amazonaws.com << 'ENDSSH'
-# pm2 stop ieating
-# pm2 delete ieating
+pm2 stop ieating
+pm2 delete ieating
 rm -rf ieating
 mkdir ieating
 tar xf package.tar.gz -C ./ieating

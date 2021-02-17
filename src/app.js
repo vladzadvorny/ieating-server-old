@@ -1,7 +1,9 @@
 import express from 'express'
 import cors from 'cors'
 
-const port = 3001
+import { port } from './constants/config'
+import { sequelize } from './models'
+
 const app = express()
 
 app.use(express.urlencoded({ extended: true }))
@@ -10,6 +12,18 @@ app.use(cors())
 
 app.get('/', (req, res) => res.json({ hello: 'world' }))
 
-app.listen({ port }, () => {
-  console.log(`✓ Started API server at http://localhost:${port}`)
-})
+// start db and server
+sequelize
+  .sync({
+    force: true
+  })
+  .then(({ config }) => {
+    console.log(
+      `✓ DB connected to ${config.host}:${config.port}, database: ${config.database}`
+    )
+
+    app.listen({ port }, () => {
+      console.log(`✓ Started API server at http://localhost:${port}`)
+    })
+  })
+  .catch(console.log)

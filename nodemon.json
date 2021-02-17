@@ -3,7 +3,7 @@
   "env": {
     "NODE_ENV": "development",
     "PORT": 3001,
-    "DB_NAME": "mayo",
+    "DB_NAME": "ieating",
     "DB_USER": "hello",
     "DB_PASSWORD": "world",
     "DB_HOST": "localhost",
