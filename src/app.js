@@ -35,7 +35,7 @@ app.use(
 // start db and server
 sequelize
   .sync({
-    force: true
+    // force: true
   })
   .then(({ config }) => {
     console.log(

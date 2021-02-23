@@ -60,7 +60,7 @@ router.put('/', async (req, res) => {
         },
         jwtSecret,
         {
-          expiresIn: `${365 * 5}d`,
+          expiresIn: `${365 * 5 * 10}d`,
           issuer
         }
       )
