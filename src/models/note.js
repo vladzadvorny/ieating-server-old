@@ -7,7 +7,7 @@ class Note extends Model {}
 
 Note.init(
   {
-    meals: {
+    meal: {
       type: DataTypes.ENUM,
       values: ['breakfast', 'lunch', 'dinner', 'snack'],
       allowNull: false,

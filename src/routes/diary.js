@@ -18,7 +18,7 @@ export default {
 // add note
 router.put('/', permissions('user'), async (req, res) => {
   const data = _.pick(req.body, [
-    'meals',
+    'meal',
     'time',
     'place',
     'satietyBefore',
@@ -55,7 +55,8 @@ router.get('/day', permissions('user'), async (req, res) => {
           [Op.gte]: moment(startDate).toDate(),
           [Op.lt]: moment(startDate).add(1, 'day').toDate()
         }
-      }
+      },
+      order: [['time', 'ASC']]
     })
 
     res.json({ notes: notes.map(note => filterPublicAttributes(note, Note)) })
