@@ -20,7 +20,7 @@ User.init(
     },
     status: {
       type: DataTypes.ENUM,
-      values: ['active', 'banned'],
+      values: ['active', 'banned', 'inactive'],
       allowNull: false,
       defaultValue: 'active'
     },

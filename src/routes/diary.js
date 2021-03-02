@@ -71,6 +71,7 @@ router.get('/analytics', permissions('user'), async (req, res) => {
   const today = moment().endOf('day')
 
   const counts = {
+    // time: {},
     meal: {
       breakfast: 0,
       lunch: 0,
@@ -152,6 +153,17 @@ router.get('/analytics', permissions('user'), async (req, res) => {
           }
         })
       })
+
+    // notes.forEach(note => {
+    //   const time = moment(note.time).startOf('day').toISOString()
+
+    //   if (counts.time[time] === undefined) {
+    //     counts.time[time] = 1
+    //   } else {
+    //     // eslint-disable-next-line operator-assignment
+    //     counts.time[time] = counts.time[time] + 1
+    //   }
+    // })
 
     res.json({
       counts
