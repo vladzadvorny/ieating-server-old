@@ -89,6 +89,7 @@ router.get('/analytics', permissions('user'), async (req, res) => {
       excellent: 0,
       calm: 0,
       neutral: 0,
+      nervous: 0,
       sad: 0,
       guilty: 0,
       terrible: 0
@@ -104,6 +105,7 @@ router.get('/analytics', permissions('user'), async (req, res) => {
       excellent: 0,
       calm: 0,
       neutral: 0,
+      nervous: 0,
       sad: 0,
       guilty: 0,
       terrible: 0

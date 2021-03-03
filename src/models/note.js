@@ -27,7 +27,15 @@ Note.init(
     },
     moodBefore: {
       type: DataTypes.ENUM,
-      values: ['excellent', 'calm', 'neutral', 'sad', 'guilty', 'terrible'],
+      values: [
+        'excellent',
+        'calm',
+        'neutral',
+        'nervous',
+        'sad',
+        'guilty',
+        'terrible'
+      ],
       defaultValue: 'neutral',
       public: true
     },
@@ -43,7 +51,15 @@ Note.init(
     },
     moodAfter: {
       type: DataTypes.ENUM,
-      values: ['excellent', 'calm', 'neutral', 'sad', 'guilty', 'terrible'],
+      values: [
+        'excellent',
+        'calm',
+        'neutral',
+        'nervous',
+        'sad',
+        'guilty',
+        'terrible'
+      ],
       defaultValue: 'neutral',
       public: true
     },
