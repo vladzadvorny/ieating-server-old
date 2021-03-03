@@ -80,7 +80,15 @@ router.get('/', permissions('user'), async (req, res) => {
       throw new Error('User not exist')
     }
 
-    return res.json({ me: filterPublicAttributes(me, User) })
+    const providers = {}
+
+    if (me.providers) {
+      providers.local = {
+        email: JSON.parse(me.providers)?.local?.email
+      }
+    }
+
+    return res.json({ me: { ...filterPublicAttributes(me, User), providers } })
   } catch (error) {
     return res.status(401).json({ error: error.message })
   }

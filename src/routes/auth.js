@@ -18,7 +18,9 @@ export default {
 
 // register
 router.put('/local', permissions('user'), async (req, res) => {
-  const { email, password, passwordConfirm } = req.body
+  const { email: _email, password, passwordConfirm } = req.body
+
+  const email = `${_email}`.toLowerCase().trim()
 
   try {
     // check fields
@@ -86,16 +88,26 @@ router.put('/local', permissions('user'), async (req, res) => {
 
     await me.save()
 
-    return res.json({ me: filterPublicAttributes(me, User) })
+    return res.json({
+      me: {
+        ...filterPublicAttributes(me, User),
+        providers: {
+          local: {
+            email
+          }
+        }
+      }
+    })
   } catch (error) {
     // console.log(error)
     return res.json(errorResponse(error))
   }
 })
 
-// auth
+// login
 router.post('/local', permissions('user'), async (req, res) => {
-  const { email, password } = req.body
+  const { email: _email, password } = req.body
+  const email = `${_email}`.toLowerCase().trim()
 
   try {
     // check fields
@@ -126,6 +138,13 @@ router.post('/local', permissions('user'), async (req, res) => {
       ])
     }
 
+    if (!bcrypt.compareSync(password, JSON.parse(me.providers).local.hash)) {
+      throw new ValidationError('AUTH_INVALID_EMAIL_OR_PASSWORD', 'auth_009', [
+        'email',
+        'password'
+      ])
+    }
+
     // inactived me
     const oldMe = await User.findByPk(req.user.id)
 
@@ -138,11 +157,19 @@ router.post('/local', permissions('user'), async (req, res) => {
     }
 
     oldMe.status = 'inactive'
+    oldMe.pushToken = ''
 
     await oldMe.save()
 
     return res.json({
-      me: filterPublicAttributes(me, User),
+      me: {
+        ...filterPublicAttributes(me, User),
+        providers: {
+          local: {
+            email
+          }
+        }
+      },
       token: jwt.sign(
         {
           user: { id: me.id }
