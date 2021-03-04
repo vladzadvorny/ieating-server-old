@@ -18,6 +18,11 @@ User.init(
       defaultValue: 'user',
       public: true
     },
+    rating: {
+      type: DataTypes.INTEGER,
+      defaultValue: 10,
+      public: true
+    },
     status: {
       type: DataTypes.ENUM,
       values: ['active', 'banned', 'inactive'],
