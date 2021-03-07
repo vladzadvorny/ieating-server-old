@@ -84,8 +84,8 @@ router.get('/', permissions('user'), async (req, res) => {
   }
 })
 
-// set like
-router.put('/like', permissions('user'), async (req, res) => {
+// set/unset like
+router.get('/like', permissions('user'), async (req, res) => {
   const { postId } = req.query
 
   try {
@@ -96,74 +96,40 @@ router.put('/like', permissions('user'), async (req, res) => {
       }
     })
 
-    if (like) {
-      if (!like.isSet) {
-        await Post.increment({ likes: '1' }, { where: { id: +postId } })
-
-        like.isSet = true
-        await like.save()
-      }
-
-      return res.json({
-        postId: like.postId,
-        new: false
-      })
-    }
-
-    const newLike = await PostLike.create({
-      postId: +postId,
-      userId: req.user.id
-    })
-
-    await Post.increment({ likes: '1' }, { where: { id: +postId } })
-
-    return res.json({
-      postId: newLike.postId,
-      new: true
-    })
-  } catch (error) {
-    return res.json(errorResponse(error))
-  }
-})
-
-// unset like
-router.delete('/like', permissions('user'), async (req, res) => {
-  const { postId } = req.query
-
-  try {
-    // const like = await PostLike.update(
-    //   { isSet: false },
-    //   {
-    //     where: { postId: +postId, userId: req.user.id },
-    //     returning: true,
-    //     plain: true
-    //   }
-    // )
-
-    const like = await PostLike.findOne({
-      where: {
-        postId: +postId,
-        userId: req.user.id,
-        isSet: true
-      }
-    })
-
+    // если лайка нет - ставим
     if (!like) {
+      const newLike = await PostLike.create({
+        postId: +postId,
+        userId: req.user.id
+      })
+
+      await Post.increment({ likes: '1' }, { where: { id: +postId } })
+
       return res.json({
-        postId,
-        new: false
+        postId: newLike.postId,
+        isSet: true
       })
     }
 
-    like.isSet = false
+    // если лайк есть и он не удалён - удаляем
+    if (like.isSet) {
+      like.isSet = false
 
-    await like.save()
+      await like.save()
 
-    await Post.increment({ likes: '-1' }, { where: { id: +postId } })
+      await Post.increment({ likes: '-1' }, { where: { id: +postId } })
+    } else {
+      // иначе ставим
+      like.isSet = true
+
+      await like.save()
+
+      await Post.increment({ likes: '1' }, { where: { id: +postId } })
+    }
 
     return res.json({
       postId: like.postId,
-      new: true
+      isSet: like.isSet
     })
   } catch (error) {
     return res.json(errorResponse(error))
