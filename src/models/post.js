@@ -1,4 +1,5 @@
 import { Model, DataTypes } from 'sequelize'
+import PostLike from './postLike'
 
 import sequelize from './sequelize'
 import User from './user'
@@ -58,6 +59,14 @@ Post.belongsTo(User, {
   foreignKey: {
     name: 'userId',
     field: 'user_id',
+    allowNull: false
+  }
+})
+
+Post.hasMany(PostLike, {
+  foreignKey: {
+    name: 'postId',
+    field: 'post_id',
     allowNull: false
   }
 })

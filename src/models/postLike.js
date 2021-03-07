@@ -2,7 +2,6 @@ import { Model, DataTypes } from 'sequelize'
 
 import sequelize from './sequelize'
 import User from './user'
-import Post from './post'
 
 class PostLike extends Model {}
 
@@ -26,15 +25,6 @@ PostLike.init(
   }
 )
 
-// eslint-disable-next-line no-unused-vars
-PostLike.beforeCreate(async (model, options) => {
-  try {
-    await Post.increment({ likes: '1' }, { where: { id: model.postId } })
-  } catch (error) {
-    console.log(error)
-  }
-})
-
 // 1:M
 PostLike.belongsTo(User, {
   foreignKey: {
@@ -45,12 +35,12 @@ PostLike.belongsTo(User, {
 })
 
 // 1:M
-PostLike.belongsTo(Post, {
-  foreignKey: {
-    name: 'postId',
-    field: 'post_id',
-    allowNull: false
-  }
-})
+// PostLike.belongsTo(Post, {
+//   foreignKey: {
+//     name: 'postId',
+//     field: 'post_id',
+//     allowNull: false
+//   }
+// })
 
 export default PostLike

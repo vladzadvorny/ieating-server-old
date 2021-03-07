@@ -1,7 +1,7 @@
 import express from 'express'
 
 import { permissions } from '../utils/permissions'
-import { Post } from '../models'
+import { Post, PostLike } from '../models'
 import { errorResponse, ValidationError } from '../utils/validationError'
 import { filterPublicAttributes } from '../utils/publicAttributes'
 
@@ -48,7 +48,7 @@ router.put('/', permissions('user'), async (req, res) => {
 
 // get all posts
 router.get('/', permissions('user'), async (req, res) => {
-  const { page = 1, limit = 20, language = 'en' } = req.query
+  const { page = 1, limit = 1, language = 'en' } = req.query
 
   try {
     const posts = await Post.findAll({
@@ -57,14 +57,115 @@ router.get('/', permissions('user'), async (req, res) => {
       },
       order: [['createdAt', 'ASC']],
       limit: +limit,
-      offset: 0 + (page - 1) * limit
+      offset: 0 + (page - 1) * limit,
+      // raw: true,
+      include: [
+        {
+          model: PostLike,
+          required: false,
+          where: {
+            userId: req.user.id,
+            isSet: true
+          },
+          attributes: ['id', 'isSet']
+        }
+      ]
     })
 
     return res.json({
-      posts: posts.map(post => filterPublicAttributes(post, Post))
+      posts: posts.map(post => ({
+        ...filterPublicAttributes(post, Post),
+        isLiked: !!post.post_likes.length
+      }))
     })
   } catch (error) {
     console.log(error)
+    return res.json(errorResponse(error))
+  }
+})
+
+// set like
+router.put('/like', permissions('user'), async (req, res) => {
+  const { postId } = req.query
+
+  try {
+    const like = await PostLike.findOne({
+      where: {
+        postId: +postId,
+        userId: req.user.id
+      }
+    })
+
+    if (like) {
+      if (!like.isSet) {
+        await Post.increment({ likes: '1' }, { where: { id: +postId } })
+
+        like.isSet = true
+        await like.save()
+      }
+
+      return res.json({
+        postId: like.postId,
+        new: false
+      })
+    }
+
+    const newLike = await PostLike.create({
+      postId: +postId,
+      userId: req.user.id
+    })
+
+    await Post.increment({ likes: '1' }, { where: { id: +postId } })
+
+    return res.json({
+      postId: newLike.postId,
+      new: true
+    })
+  } catch (error) {
+    return res.json(errorResponse(error))
+  }
+})
+
+// unset like
+router.delete('/like', permissions('user'), async (req, res) => {
+  const { postId } = req.query
+
+  try {
+    // const like = await PostLike.update(
+    //   { isSet: false },
+    //   {
+    //     where: { postId: +postId, userId: req.user.id },
+    //     returning: true,
+    //     plain: true
+    //   }
+    // )
+
+    const like = await PostLike.findOne({
+      where: {
+        postId: +postId,
+        userId: req.user.id,
+        isSet: true
+      }
+    })
+
+    if (!like) {
+      return res.json({
+        postId,
+        new: false
+      })
+    }
+
+    like.isSet = false
+
+    await like.save()
+
+    await Post.increment({ likes: '-1' }, { where: { id: +postId } })
+
+    return res.json({
+      postId: like.postId,
+      new: true
+    })
+  } catch (error) {
     return res.json(errorResponse(error))
   }
 })
