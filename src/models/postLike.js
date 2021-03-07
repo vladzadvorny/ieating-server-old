@@ -8,11 +8,11 @@ class PostLike extends Model {}
 
 PostLike.init(
   {
-    status: {
-      type: DataTypes.ENUM,
-      values: ['on', 'off'],
+    isSet: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: 'on'
+      defaultValue: true,
+      field: 'is_set'
     },
 
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
@@ -25,6 +25,15 @@ PostLike.init(
     updatedAt: false
   }
 )
+
+// eslint-disable-next-line no-unused-vars
+PostLike.beforeCreate(async (model, options) => {
+  try {
+    await Post.increment({ likes: '1' }, { where: { id: model.postId } })
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 // 1:M
 PostLike.belongsTo(User, {

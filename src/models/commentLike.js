@@ -8,11 +8,11 @@ class CommentLike extends Model {}
 
 CommentLike.init(
   {
-    status: {
-      type: DataTypes.ENUM,
-      values: ['on', 'off'],
+    isSet: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: 'on'
+      defaultValue: true,
+      field: 'is_set'
     },
 
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
@@ -25,6 +25,15 @@ CommentLike.init(
     updatedAt: false
   }
 )
+
+// eslint-disable-next-line no-unused-vars
+CommentLike.beforeCreate(async (model, options) => {
+  try {
+    await Comment.increment({ likes: '1' }, { where: { id: model.commentId } })
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 // 1:M
 CommentLike.belongsTo(User, {

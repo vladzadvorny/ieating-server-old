@@ -9,23 +9,38 @@ Post.init(
   {
     title: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      public: true
     },
     body: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
+      public: true
     },
     status: {
       type: DataTypes.ENUM,
       values: ['publish', 'draft', 'deleted', 'moderated'],
       allowNull: false,
-      defaultValue: 'moderated'
+      defaultValue: 'moderated',
+      public: true
     },
     language: {
       type: DataTypes.ENUM,
       values: ['ru', 'en'],
       allowNull: false,
-      defaultValue: 'en'
+      defaultValue: 'en',
+      public: true
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      public: true
+    },
+    isAnonymous: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'is_anonymous'
     },
 
     createdAt: { type: DataTypes.DATE, field: 'created_at' },

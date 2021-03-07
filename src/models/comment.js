@@ -10,7 +10,13 @@ Comment.init(
   {
     body: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      public: true
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      public: true
     },
 
     createdAt: { type: DataTypes.DATE, field: 'created_at' },

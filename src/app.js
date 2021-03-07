@@ -7,6 +7,7 @@ import { join } from 'path'
 
 import { port, isDevelopment } from './constants/config'
 import { sequelize } from './models'
+import mocks from './mocks'
 
 const app = express()
 
@@ -42,6 +43,7 @@ sequelize
       `✓ DB connected to ${config.host}:${config.port}, database: ${config.database}`
     )
 
+    // mocks()
     app.listen({ port }, () => {
       console.log(`✓ Started API server at http://localhost:${port}`)
     })
