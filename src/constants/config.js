@@ -20,3 +20,8 @@ export const jwtIssuer = process.env.JWT_ISSUER
 
 export const destination = process.env.DESTINATION
 export const uploadsRoute = process.env.UPLOADS_ROUTE
+
+export const AWSAccessKeyId = process.env.AWS_ACCESS_KEY_ID
+export const AWSSecretKey = process.env.AWS_SECRET_ACCESS_KEY
+export const AWSBucket = process.env.AWS_BUCKET
+export const AWSRoute = process.env.AWS_ROUTE

@@ -1,7 +1,7 @@
 import express from 'express'
 
 import { permissions } from '../utils/permissions'
-import { Post, PostLike } from '../models'
+import { Post, PostLike, User } from '../models'
 import { errorResponse, ValidationError } from '../utils/validationError'
 import { filterPublicAttributes } from '../utils/publicAttributes'
 
@@ -68,6 +68,10 @@ router.get('/', permissions('user'), async (req, res) => {
             isSet: true
           },
           attributes: ['id', 'isSet']
+        },
+        {
+          model: User,
+          attributes: ['id', 'name']
         }
       ]
     })
@@ -75,7 +79,8 @@ router.get('/', permissions('user'), async (req, res) => {
     return res.json({
       posts: posts.map(post => ({
         ...filterPublicAttributes(post, Post),
-        isLiked: !!post.post_likes.length
+        isLiked: !!post.post_likes.length,
+        user: post.user
       }))
     })
   } catch (error) {

@@ -30,6 +30,8 @@ export default async () => {
         postId: post.id,
         userId: i + 1
       })
+
+      await Post.increment({ likes: '1' }, { where: { id: post.id } })
     })
 
     // create comments
@@ -39,6 +41,7 @@ export default async () => {
         postId: post.id,
         userId: i + 1
       })
+      await Post.increment({ comments: '1' }, { where: { id: post.id } })
 
       // create comment likes
       Array.from({ length: getRandomArbitrary(3, 7) }).forEach(async (_, i) => {

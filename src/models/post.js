@@ -37,6 +37,11 @@ Post.init(
       defaultValue: 0,
       public: true
     },
+    comments: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      public: true
+    },
     isAnonymous: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize'
 
 import sequelize from './sequelize'
+import Upload from './upload'
 
 class User extends Model {}
 
@@ -50,5 +51,13 @@ User.init(
     timestamps: true
   }
 )
+
+User.hasMany(Upload, {
+  foreignKey: {
+    name: 'userId',
+    field: 'user_id',
+    allowNull: false
+  }
+})
 
 export default User

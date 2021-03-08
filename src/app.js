@@ -4,6 +4,7 @@ import cors from 'cors'
 import errorhandler from 'strong-error-handler'
 import { readdirSync } from 'fs'
 import { join } from 'path'
+import fileUpload from 'express-fileupload'
 
 import { port, isDevelopment } from './constants/config'
 import { sequelize } from './models'
@@ -12,7 +13,12 @@ import mocks from './mocks'
 const app = express()
 
 app.use(express.urlencoded({ extended: true }))
-app.use(express.json({ limit: '2mb' }))
+app.use(express.json())
+app.use(
+  fileUpload({
+    limits: { fileSize: 5 * 1024 * 1024 }
+  })
+)
 app.use(cors())
 
 app.get('/', (req, res) => res.json({ hello: 'world' }))

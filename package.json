@@ -13,17 +13,20 @@
     "ssh": "ssh -i '~/.ssh/eating.pem' ubuntu@ec2-18-188-190-7.us-east-2.compute.amazonaws.com"
   },
   "dependencies": {
+    "aws-sdk": "^2.858.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "email-validator": "^2.0.4",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
     "faker": "^5.4.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "mysql2": "^2.2.5",
     "sequelize": "^6.5.0",
+    "sharp": "^0.27.2",
     "strong-error-handler": "^4.0.0"
   },
   "devDependencies": {
