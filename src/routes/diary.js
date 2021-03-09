@@ -34,7 +34,20 @@ router.put('/', permissions('user'), async (req, res) => {
   try {
     const note = await Note.create({ ...data, userId: req.user.id })
 
-    res.json({ note: filterPublicAttributes(note, Note) })
+    let upload
+    if (data.uploadId) {
+      upload = await Upload.findByPk(data.uploadId)
+    }
+
+    res.json({
+      note: {
+        ...filterPublicAttributes(note, Note),
+        upload: upload && {
+          ...filterPublicAttributes(upload, Upload),
+          uri: `${AWSRoute}/${upload.path}`
+        }
+      }
+    })
   } catch (error) {
     console.log(error)
     return res.json(errorResponse(error))
