@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize'
 
 import sequelize from './sequelize'
+import Upload from './upload'
 import User from './user'
 
 class Note extends Model {}
@@ -85,6 +86,15 @@ Note.belongsTo(User, {
     name: 'userId',
     field: 'user_id',
     allowNull: false
+  }
+})
+
+// 1:M
+Note.belongsTo(Upload, {
+  foreignKey: {
+    name: 'uploadId',
+    field: 'upload_id',
+    allowNull: true
   }
 })
 

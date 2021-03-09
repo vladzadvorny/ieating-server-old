@@ -4,9 +4,10 @@ import { Op } from 'sequelize'
 import moment from 'moment'
 
 import { permissions } from '../utils/permissions'
-import { Note } from '../models'
+import { Note, Upload } from '../models'
 import { errorResponse } from '../utils/validationError'
 import { filterPublicAttributes } from '../utils/publicAttributes'
+import { AWSRoute } from '../constants/config'
 
 const router = express.Router()
 
@@ -26,7 +27,8 @@ router.put('/', permissions('user'), async (req, res) => {
     'description',
     'satietyAfter',
     'moodAfter',
-    'cause'
+    'cause',
+    'uploadId'
   ])
 
   try {
@@ -56,10 +58,19 @@ router.get('/day', permissions('user'), async (req, res) => {
           [Op.lt]: moment(startDate).add(1, 'day').toDate()
         }
       },
-      order: [['time', 'ASC']]
+      order: [['time', 'ASC']],
+      include: [{ model: Upload, required: false }]
     })
 
-    res.json({ notes: notes.map(note => filterPublicAttributes(note, Note)) })
+    res.json({
+      notes: notes.map(note => ({
+        ...filterPublicAttributes(note, Note),
+        upload: note.upload && {
+          ...filterPublicAttributes(note.upload, Upload),
+          uri: `${AWSRoute}/${note.upload.path}`
+        }
+      }))
+    })
   } catch (error) {
     console.log(error)
     return res.json(errorResponse(error))
