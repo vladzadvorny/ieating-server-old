@@ -39,7 +39,7 @@ router.put('/', permissions('user'), async (req, res) => {
       upload = await Upload.findByPk(data.uploadId)
     }
 
-    res.json({
+    return res.json({
       note: {
         ...filterPublicAttributes(note, Note),
         upload: upload && {
@@ -50,6 +50,87 @@ router.put('/', permissions('user'), async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+    return res.json(errorResponse(error))
+  }
+})
+
+// delete note
+router.delete('/', permissions('user'), async (req, res) => {
+  const { id } = req.query
+  try {
+    if (!id) {
+      throw new Error('Error')
+    }
+
+    const note = await Note.findByPk(id)
+
+    if (!note) {
+      throw new Error('Error')
+    }
+
+    if (note.userId !== req.user.id) {
+      throw new Error('Error')
+    }
+
+    note.status = 'inactive'
+    await note.save()
+
+    return res.json({
+      note: filterPublicAttributes(note, Note)
+    })
+  } catch (error) {
+    return res.json(errorResponse(error))
+  }
+})
+
+// update note
+router.post('/', permissions('user'), async (req, res) => {
+  const { id } = req.query
+  const data = _.pick(req.body, [
+    'meal',
+    'time',
+    'place',
+    'satietyBefore',
+    'moodBefore',
+    'description',
+    'satietyAfter',
+    'moodAfter',
+    'cause',
+    'uploadId'
+  ])
+
+  try {
+    if (!id) {
+      throw new Error('Error')
+    }
+
+    const note = await Note.findByPk(id)
+
+    if (!note) {
+      throw new Error('Error')
+    }
+
+    Object.keys(data).forEach(key => {
+      note[key] = data[key]
+    })
+
+    await note.save()
+
+    let upload
+    if (data.uploadId) {
+      upload = await Upload.findByPk(data.uploadId)
+    }
+
+    return res.json({
+      note: {
+        ...filterPublicAttributes(note, Note),
+        upload: upload && {
+          ...filterPublicAttributes(upload, Upload),
+          uri: `${AWSRoute}/${upload.path}`
+        }
+      }
+    })
+  } catch (error) {
     return res.json(errorResponse(error))
   }
 })
@@ -69,7 +150,8 @@ router.get('/day', permissions('user'), async (req, res) => {
         time: {
           [Op.gte]: moment(startDate).toDate(),
           [Op.lt]: moment(startDate).add(1, 'day').toDate()
-        }
+        },
+        status: 'active'
       },
       order: [['time', 'ASC']],
       include: [{ model: Upload, required: false }]
@@ -151,7 +233,8 @@ router.get('/analytics', permissions('user'), async (req, res) => {
         time: {
           [Op.gte]: today.clone().subtract(30, 'days').toDate(),
           [Op.lt]: today.clone().toDate()
-        }
+        },
+        status: 'active'
       },
       order: [['time', 'ASC']],
       raw: true

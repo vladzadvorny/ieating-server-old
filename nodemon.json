@@ -7,7 +7,9 @@
     "DB_USER": "hello",
     "DB_PASSWORD": "world",
     "DB_HOST": "localhost",
-    "DB_PORT": 3306
+    "DB_PORT": 3306,
+    "AWS_BUCKET": "ieating-test",
+    "AWS_ROUTE": "https://ieating-test.s3.amazonaws.com"
   },
   "watch": "./",
   "ext": ".js,.json",

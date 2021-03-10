@@ -34,9 +34,9 @@ router.post('/', permissions('user'), async (req, res) => {
 
     const Key = `${Math.random()
       .toString(36)
-      .slice(-2)}/${Math.random()
+      .slice(-1)}/${Math.random()
       .toString(36)
-      .slice(-2)}/${(+new Date()).toString(36)}.jpg`
+      .slice(-1)}/${(+new Date()).toString(36)}.jpg`
 
     // await s3.createBucket({ Bucket }).promise()
 

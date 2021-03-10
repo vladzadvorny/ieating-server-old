@@ -69,6 +69,12 @@ Note.init(
       allowNull: true,
       public: true
     },
+    status: {
+      type: DataTypes.ENUM,
+      values: ['active', 'inactive'],
+      allowNull: false,
+      defaultValue: 'active'
+    },
 
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
     updatedAt: { type: DataTypes.DATE, field: 'updated_at' }
