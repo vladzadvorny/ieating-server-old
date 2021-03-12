@@ -1,9 +1,10 @@
 import express from 'express'
 
 import { permissions } from '../utils/permissions'
-import { Post, PostLike, User } from '../models'
+import { Post, PostLike, Upload, User } from '../models'
 import { errorResponse, ValidationError } from '../utils/validationError'
 import { filterPublicAttributes } from '../utils/publicAttributes'
+import { AWSRoute } from '../constants/config'
 
 const router = express.Router()
 
@@ -67,11 +68,20 @@ router.get('/', permissions('user'), async (req, res) => {
             userId: req.user.id,
             isSet: true
           },
-          attributes: ['id', 'isSet']
+          attributes: ['id']
         },
         {
           model: User,
-          attributes: ['id', 'name']
+          attributes: ['id', 'name'],
+          include: {
+            model: Upload,
+            as: 'avatar'
+          }
+        },
+        {
+          model: Upload,
+          as: 'uploads',
+          attributes: ['id', 'path', 'type']
         }
       ]
     })
@@ -80,7 +90,15 @@ router.get('/', permissions('user'), async (req, res) => {
       posts: posts.map(post => ({
         ...filterPublicAttributes(post, Post),
         isLiked: !!post.post_likes.length,
-        user: post.user
+        user: { ...JSON.parse(JSON.stringify(post.user)) },
+        // {
+        //   ...post.user
+        //   // avatar: post.user.avatar && {
+        //   //   ...filterPublicAttributes(post.user.avatar, Upload),
+        //   //   uri: `${AWSRoute}/${post.user.avatar.path}`
+        //   // }
+        // },
+        uploads: post.uploads
       }))
     })
   } catch (error) {

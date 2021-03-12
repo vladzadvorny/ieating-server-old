@@ -5,8 +5,29 @@ import CommentLike from './commentLike'
 import Note from './note'
 import Post from './post'
 import PostLike from './postLike'
+import PostUpload from './postUpload'
 import Upload from './upload'
 import User from './user'
+
+// Recipe Upload
+// N:M
+Upload.belongsToMany(Post, {
+  through: PostUpload,
+  foreignKey: {
+    name: 'uploadId',
+    field: 'upload_id'
+  }
+})
+
+// N:M
+Post.belongsToMany(Upload, {
+  through: PostUpload,
+  foreignKey: {
+    name: 'postId',
+    field: 'post_id'
+  },
+  as: 'uploads'
+})
 
 // PostLike.beforeCreate(async (model, options) => {
 //   try {

@@ -2,10 +2,10 @@ import express from 'express'
 import jwt from 'jsonwebtoken'
 import _ from 'lodash'
 
-import { User } from '../models'
+import { Upload, User } from '../models'
 import { permissions } from '../utils/permissions'
 import { filterPublicAttributes } from '../utils/publicAttributes'
-import { jwtSecret, jwtIssuer as issuer } from '../constants/config'
+import { jwtSecret, jwtIssuer as issuer, AWSRoute } from '../constants/config'
 import { ValidationError, errorResponse } from '../utils/validationError'
 
 const router = express.Router()
@@ -74,7 +74,14 @@ router.put('/', async (req, res) => {
 // get me
 router.get('/', permissions('user'), async (req, res) => {
   try {
-    const me = await User.findByPk(req.user.id)
+    const me = await User.findByPk(req.user.id, {
+      include: [
+        {
+          model: Upload,
+          as: 'avatar'
+        }
+      ]
+    })
 
     if (!me) {
       throw new Error('User not exist')
@@ -88,7 +95,16 @@ router.get('/', permissions('user'), async (req, res) => {
       }
     }
 
-    return res.json({ me: { ...filterPublicAttributes(me, User), providers } })
+    return res.json({
+      me: {
+        ...filterPublicAttributes(me, User),
+        providers,
+        avatar: me.avatar && {
+          ...filterPublicAttributes(me.avatar, Upload),
+          uri: `${AWSRoute}/${me.avatar.path}`
+        }
+      }
+    })
   } catch (error) {
     return res.status(401).json({ error: error.message })
   }

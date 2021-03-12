@@ -41,6 +41,13 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true
     },
+    language: {
+      type: DataTypes.ENUM,
+      values: ['ru', 'en'],
+      allowNull: false,
+      defaultValue: 'en',
+      public: true
+    },
 
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
     updatedAt: { type: DataTypes.DATE, field: 'updated_at' }
@@ -56,8 +63,18 @@ User.hasMany(Upload, {
   foreignKey: {
     name: 'userId',
     field: 'user_id',
-    allowNull: false
+    allowNull: true
   }
+})
+
+User.belongsTo(Upload, {
+  foreignKey: {
+    name: 'avatarId',
+    field: 'avatar_id',
+    allowNull: true
+  },
+  as: 'avatar',
+  constraints: false
 })
 
 export default User
