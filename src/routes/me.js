@@ -114,16 +114,19 @@ router.get('/', permissions('user'), async (req, res) => {
 router.post('/', permissions('user'), async (req, res) => {
   const ip =
     req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.ip || ''
-  const { pushToken } = _.pick(req.body, ['pushToken'])
+  const data = _.pick(req.body, ['pushToken', 'language', 'avatarId'])
 
   try {
     const me = await User.findByPk(req.user.id)
-    console.log('hello')
+
     if (!me) {
       throw new Error('User not exist')
     }
 
-    me.pushToken = pushToken
+    Object.keys(data).forEach(key => {
+      me[key] = data[key]
+    })
+
     me.ip = ip
 
     await me.save()
