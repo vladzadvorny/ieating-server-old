@@ -12,11 +12,6 @@ Upload.init(
       allowNull: false,
       unique: true
     },
-    pathThumb: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      field: 'path_thumb'
-    },
     type: {
       type: DataTypes.ENUM,
       values: ['image'],

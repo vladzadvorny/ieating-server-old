@@ -16,6 +16,7 @@ export default {
 }
 
 router.post('/', permissions('user'), async (req, res) => {
+  const { thumb } = req.query
   try {
     const s3 = new AWS.S3()
     const { file } = req.files
@@ -28,7 +29,7 @@ router.post('/', permissions('user'), async (req, res) => {
 
     const Body = await sharp(buffer)
       .jpeg({
-        quality: 30
+        quality: 40
       })
       .toBuffer()
 
@@ -48,6 +49,25 @@ router.post('/', permissions('user'), async (req, res) => {
         ACL: 'public-read'
       })
       .promise()
+
+    if (thumb) {
+      const BodyThumb = await sharp(buffer)
+        .jpeg({
+          quality: 40
+        })
+        .resize(150, 150)
+        .toBuffer()
+
+      // eslint-disable-next-line no-unused-vars
+      const dataThumb = await s3
+        .upload({
+          Bucket,
+          Key: Key.replace('.jpg', '_thumb.jpg'),
+          Body: BodyThumb,
+          ACL: 'public-read'
+        })
+        .promise()
+    }
 
     const upload = await Upload.create({
       path: data.Key,
