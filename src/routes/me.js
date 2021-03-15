@@ -114,7 +114,14 @@ router.get('/', permissions('user'), async (req, res) => {
 router.post('/', permissions('user'), async (req, res) => {
   const ip =
     req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.ip || ''
-  const data = _.pick(req.body, ['pushToken', 'language', 'avatarId'])
+  const data = _.pick(req.body, [
+    'pushToken',
+    'language',
+    'avatarId',
+    'name',
+    'gender',
+    'birthday'
+  ])
 
   try {
     const me = await User.findByPk(req.user.id)

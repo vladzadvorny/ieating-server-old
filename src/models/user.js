@@ -48,6 +48,17 @@ User.init(
       defaultValue: 'en',
       public: true
     },
+    gender: {
+      type: DataTypes.ENUM,
+      values: ['male', 'female'],
+      allowNull: true,
+      public: true
+    },
+    birthday: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      public: true
+    },
 
     createdAt: { type: DataTypes.DATE, field: 'created_at' },
     updatedAt: { type: DataTypes.DATE, field: 'updated_at' }

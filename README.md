@@ -21,3 +21,7 @@ yarn add -D nodemon
 ```
 
 aws poloskun1994@bk.ru
+
+```
+select date(created_at) d, count(*) c from users group by d order by d desc;
+```
