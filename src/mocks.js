@@ -1,4 +1,5 @@
 import faker from 'faker'
+import moment from 'moment'
 
 import { Post, PostLike, Comment, CommentLike } from './models'
 
@@ -13,14 +14,19 @@ export default async () => {
     truncate: { cascade: true }
   })
 
+  const date = moment()
+
   // create posts
   Array.from({ length: 100 }).forEach(async (_, i) => {
+    const d = date.add(1, 'minute')
     const post = await Post.create({
       title: faker.lorem.words(4),
       body: faker.lorem.words(30),
       isAnonymous: Math.random() < 0.5,
       language: 'en',
-      userId: getRandomArbitrary(1, 10)
+      userId: getRandomArbitrary(1, 10),
+      status: 'publish',
+      createdAt: d.toISOString()
     })
 
     // create Post likes

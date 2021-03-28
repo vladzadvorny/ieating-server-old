@@ -1,4 +1,5 @@
 import express from 'express'
+import { Op } from 'sequelize'
 
 import { permissions } from '../utils/permissions'
 import { Post, PostLike, Upload, User } from '../models'
@@ -15,16 +16,24 @@ export default {
 
 // add post
 router.put('/', permissions('user'), async (req, res) => {
-  const { title, body, language } = req.body
+  const {
+    // title,
+    body,
+    language,
+    isAnonymous
+  } = req.body
 
   try {
     // check fields
-    if (!title || !body) {
+    if (
+      // !title ||
+      !body
+    ) {
       const fields = []
 
-      if (!title) {
-        fields.push('email')
-      }
+      // if (!title) {
+      //   fields.push('email')
+      // }
       if (!body) {
         fields.push('password')
       }
@@ -33,10 +42,11 @@ router.put('/', permissions('user'), async (req, res) => {
     }
 
     const post = await Post.create({
-      title,
+      // title,
       body,
       status: 'moderated',
       language,
+      isAnonymous: isAnonymous || false,
       userId: req.user.id
     })
 
@@ -49,14 +59,17 @@ router.put('/', permissions('user'), async (req, res) => {
 
 // get all posts
 router.get('/', permissions('user'), async (req, res) => {
-  const { page = 1, limit = 1, language = 'en' } = req.query
+  const { page = 1, limit = 10, language = 'en' } = req.query
 
   try {
     const posts = await Post.findAll({
       where: {
-        language
+        [Op.or]: [
+          { language, status: 'publish' },
+          { status: 'moderated', userId: req.user.id }
+        ]
       },
-      order: [['createdAt', 'ASC']],
+      order: [['createdAt', 'DESC']],
       limit: +limit,
       offset: 0 + (page - 1) * limit,
       // raw: true,
@@ -87,19 +100,25 @@ router.get('/', permissions('user'), async (req, res) => {
     })
 
     return res.json({
-      posts: posts.map(post => ({
-        ...filterPublicAttributes(post, Post),
-        isLiked: !!post.post_likes.length,
-        user: { ...JSON.parse(JSON.stringify(post.user)) },
-        // {
-        //   ...post.user
-        //   // avatar: post.user.avatar && {
-        //   //   ...filterPublicAttributes(post.user.avatar, Upload),
-        //   //   uri: `${AWSRoute}/${post.user.avatar.path}`
-        //   // }
-        // },
-        uploads: post.uploads
-      }))
+      posts: posts.map(post => {
+        const user = JSON.parse(JSON.stringify(post.user))
+
+        return {
+          ...filterPublicAttributes(post, Post),
+          isLiked: !!post.post_likes.length,
+          user: {
+            ...user,
+            avatar: post.user?.avatar && {
+              ...filterPublicAttributes(post.user.avatar, Upload),
+              uri: `${AWSRoute}/${post.user.avatar.path}`
+            }
+          },
+          uploads: post.uploads.map(upload => ({
+            ...filterPublicAttributes(upload, Upload),
+            uri: `${AWSRoute}/${upload.path}`
+          }))
+        }
+      })
     })
   } catch (error) {
     console.log(error)
