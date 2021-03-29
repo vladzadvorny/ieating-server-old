@@ -16,33 +16,25 @@ export default {
 
 // add post
 router.put('/', permissions('user'), async (req, res) => {
-  const {
-    // title,
-    body,
-    language,
-    isAnonymous
-  } = req.body
+  const { title, body, uploads, language, isAnonymous } = req.body
 
   try {
     // check fields
-    if (
-      // !title ||
-      !body
-    ) {
+    if (!title || !body) {
       const fields = []
 
-      // if (!title) {
-      //   fields.push('email')
-      // }
+      if (!title) {
+        fields.push('title')
+      }
       if (!body) {
-        fields.push('password')
+        fields.push('body')
       }
 
       throw new ValidationError('BLOG_ALL_MUST_BE_FILLED', 'blog_001', fields)
     }
 
     const post = await Post.create({
-      // title,
+      title,
       body,
       status: 'moderated',
       language,
@@ -50,7 +42,11 @@ router.put('/', permissions('user'), async (req, res) => {
       userId: req.user.id
     })
 
-    return res.json({ post: filterPublicAttributes(post, Post) })
+    if (uploads.length) {
+      await post.addUploads(uploads.map(upload => upload.id))
+    }
+
+    return res.json({ post: filterPublicAttributes(post, Post), uploads })
   } catch (error) {
     console.log(error)
     return res.json(errorResponse(error))
