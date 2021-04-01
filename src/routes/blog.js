@@ -46,7 +46,9 @@ router.put('/', permissions('user'), async (req, res) => {
       await post.addUploads(uploads.map(upload => upload.id))
     }
 
-    return res.json({ post: filterPublicAttributes(post, Post), uploads })
+    return res.json({
+      post: { ...filterPublicAttributes(post, Post), uploads }
+    })
   } catch (error) {
     console.log(error)
     return res.json(errorResponse(error))
